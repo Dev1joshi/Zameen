@@ -213,7 +213,7 @@ REACT_APP_API_URL=http://localhost:5000/api
 
 ---
 
-## 🇮🇳 Made for India
+## Made In India
 
 Zameen covers real Indian cities, uses ₹ pricing in Lakhs/Crores, and is built to work across all major metros and tier-2 cities.
 
