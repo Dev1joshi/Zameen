@@ -1,219 +1,271 @@
-# 🏠 Zameen — Smart Property Intelligence Platform
+# Zameen — Smart Property Intelligence Platform
 
-India's most intelligent property platform with AI-powered pricing, area ratings, investment insights, and verified listings across all major Indian cities.
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-- **Node.js** v18+
-- **MongoDB** (local or Atlas)
-- **Python** 3.9+ (for ML API)
+> A full-stack real estate web application built for the Indian property market, featuring AI-powered price estimation, locality insights, investment scoring, and a complete buyer/seller workflow.
 
 ---
 
-## 📁 Project Structure
+## What This Project Is About
+
+Finding the right property in India is notoriously difficult — prices vary wildly across localities, there's almost no transparency in market trends, and buyers rarely have access to data-backed insights before making a decision.
+
+**Zameen** addresses this by combining a curated property listings platform with machine learning-powered price estimation, area quality ratings, and investment scoring — all in one place. It's built to work across 10 major Indian cities and is designed with real-world scale in mind.
+
+> Adapted and developed from a base project scaffold. All ML integration, feature enhancements, and architectural decisions were implemented as part of this build.
+
+---
+
+## Features
+
+### For Buyers
+- **Browse & Filter Listings** — Search properties by city, locality, BHK, price range, furnishing status, and property type
+- **AI Price Estimator** — Enter property details and get a fair market price estimate powered by a trained Random Forest model, along with a confidence interval (P10–P90)
+- **Price History Charts** — Visualize how prices have moved in any locality over time
+- **Area Ratings** — Each locality is rated across 9 parameters including safety, schools, connectivity, and walkability
+- **Locality Comparison** — Compare up to 3 localities side-by-side on pricing, ratings, and investment potential
+- **Save Properties** — Bookmark listings to revisit later (requires login)
+
+### For Sellers
+- **Seller Dashboard** — Create, manage, activate, or deactivate your listings from a single view
+- **Market Context** — See how your listing compares to similar properties in the area
+
+### Intelligence Layer
+- **Investment Scores** — Data-backed ROI scoring for localities based on price trends and demand signals
+- **Top Investment Picks** — Curated recommendations for investors across all supported cities
+- **Market Stats** — City-level statistics on average prices, price per sqft, and supply
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| **Frontend** | React 18, React Router v6, Recharts, react-hot-toast, react-icons |
+| **Backend** | Node.js, Express.js, Mongoose, JWT, bcryptjs, express-validator |
+| **Database** | MongoDB (local or Atlas) |
+| **ML Service** | Python, Flask, scikit-learn (Random Forest Regressor), pandas, numpy |
+| **Styling** | Pure CSS with CSS custom properties — no UI library dependency |
+
+---
+
+## ML Model Details
+
+The price estimator uses a **Random Forest Regressor** trained on 6,000 synthetic records modeled after real Indian property market patterns.
+
+- **Input features**: City, locality, BHK count, carpet area, floor, property age, furnished status, facing direction, property type
+- **Output**: Predicted price + confidence interval + top contributing factors
+- **Fallback**: If the ML service is unavailable, the backend automatically switches to a rule-based heuristic so the estimator always returns a result
+
+---
+
+## Folder Structure
 
 ```
 zameen-fullstack/
-├── frontend/          # React 18 app (CRA)
+├── frontend/                  # React 18 client
 │   └── src/
-│       ├── pages/     # All page components
-│       ├── components/ # Reusable components
-│       ├── context/   # Auth context
-│       └── utils/     # API client & helpers
-├── backend/           # Node.js + Express API
-│   ├── models/        # Mongoose schemas
-│   ├── routes/        # API routes
-│   ├── middleware/    # Auth middleware
-│   └── scripts/       # Seed script
-└── ml-api/            # Python Flask ML service
-    ├── app.py         # Random Forest model
-    └── zameen_ml_model/ # Saved model files
+│       ├── pages/             # Route-level page components
+│       ├── components/        # Shared/reusable UI components
+│       ├── context/           # React context (auth state)
+│       └── utils/             # API client, helper functions
+│
+├── backend/                   # Node.js + Express REST API
+│   ├── models/                # Mongoose data models
+│   ├── routes/                # Modular API route handlers
+│   ├── middleware/            # JWT auth middleware
+│   └── scripts/               # Database seed script
+│
+└── ml-api/                    # Python Flask ML microservice
+    ├── app.py                 # Model serving + prediction endpoint
+    └── zameen_ml_model/       # Serialized model files
 ```
 
 ---
 
-## ⚙️ Setup & Run
+## Getting Started
 
-### Step 1 — Clone & Install
+### Prerequisites
+
+- Node.js v18+
+- MongoDB (local instance or Atlas connection string)
+- Python 3.9+ *(only needed if you want to run the ML service)*
+
+---
+
+### 1. Clone and Install Dependencies
 
 ```bash
-# Backend
+# Install backend dependencies
 cd backend
 npm install
 cp .env.example .env
-# Edit .env with your MongoDB URI
+# Open .env and fill in your values (see Environment Variables section)
 
-# Frontend  
+# Install frontend dependencies
 cd ../frontend
 npm install
 ```
 
-### Step 2 — Seed the Database
+---
+
+### 2. Seed the Database
+
+This script generates 1,000+ realistic Indian property listings across 10 cities and populates your MongoDB instance.
 
 ```bash
 cd backend
 node scripts/seedFromCSV.js
 ```
 
-This generates **1000+ realistic Indian property listings** across 10 cities and seeds MongoDB.
+Three demo accounts are created automatically:
 
-Demo accounts created:
-| Role   | Email                 | Password   |
-|--------|-----------------------|------------|
-| Admin  | admin@zameen.com      | admin123   |
-| Seller | seller@zameen.com     | seller123  |
-| Buyer  | buyer@zameen.com      | buyer123   |
+| Role | Email | Password |
+|---|---|---|
+| Admin | admin@zameen.com | admin123 |
+| Seller | seller@zameen.com | seller123 |
+| Buyer | buyer@zameen.com | buyer123 |
 
-### Step 3 — Run Backend
+---
+
+### 3. Start the Backend
 
 ```bash
 cd backend
-npm run dev   # starts on http://localhost:5000
+npm run dev
+# Runs on http://localhost:5000
 ```
 
-### Step 4 — Run ML API (Optional but recommended)
+---
+
+### 4. Start the ML Service *(Optional but recommended)*
 
 ```bash
 cd ml-api
 python -m venv venv
-source venv/bin/activate    # Windows: venv\Scripts\activate
+source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-python app.py               # starts on http://localhost:8000
+python app.py
+# Runs on http://localhost:8000
 ```
 
-> ℹ️ If ML API is not running, the backend uses a smart heuristic fallback for price estimates.
+> If you skip this step, the backend's heuristic fallback will handle all price estimation requests automatically.
 
-### Step 5 — Run Frontend
+---
+
+### 5. Start the Frontend
 
 ```bash
 cd frontend
-npm start    # starts on http://localhost:3000
+npm install
+npm start
+# Runs on http://localhost:3000
 ```
 
 ---
 
-## 🌟 Features
+## Environment Variables
 
-| Feature | Description |
-|---------|-------------|
-| 🏠 **Browse Properties** | Filter by city, locality, BHK, price, furnished status across all of India |
-| 🤖 **AI Price Estimator** | Random Forest ML model estimates fair market price with confidence score |
-| 📊 **Price History** | Track price trends over time for any locality |
-| ⭐ **Area Ratings** | Community ratings across safety, schools, connectivity & 6 more parameters |
-| 💰 **Investment Score** | Data-backed ROI scoring for every locality |
-| 🔍 **Compare** | Side-by-side comparison of up to 3 localities |
-| 📋 **Seller Dashboard** | List, manage, activate/deactivate listings |
-| 🔒 **Auth** | JWT-based login/register with buyer & seller roles |
-| ❤️ **Save Properties** | Bookmark properties (requires login) |
+### `backend/.env`
 
----
-
-## 🌍 Supported Cities
-
-Bangalore · Mumbai · Gurgaon · Hyderabad · Pune · Delhi · Chennai · Kolkata · Ahmedabad · Jaipur
-
-Each city has **15 localities** with realistic pricing, area ratings, and investment scores.
-
----
-
-## 🤖 ML Model Details
-
-- **Algorithm**: Random Forest Regressor (200 estimators)
-- **Training Data**: 6000 synthetic records modeled on real Indian market patterns
-- **Features**: City, Locality, BHK, Area, Floor, Age, Furnished Status, Facing, Property Type
-- **Output**: Predicted price + confidence interval (P10–P90) + top factors
-- **Fallback**: Rule-based heuristic if Python API is down
-
----
-
-## 🔌 API Endpoints
-
-### Auth
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /api/auth/register | Register user |
-| POST | /api/auth/login | Login |
-| GET  | /api/auth/me | Get profile |
-| POST | /api/auth/save-property/:id | Save/unsave property |
-
-### Properties
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/properties | List with filters |
-| GET | /api/properties/:id | Single property |
-| POST | /api/properties | Create listing |
-| PUT | /api/properties/:id | Update listing |
-| DELETE | /api/properties/:id | Delete listing |
-| GET | /api/properties/cities | All cities |
-| GET | /api/properties/localities/:city | Localities by city |
-| GET | /api/properties/price-history/:city/:locality | Price history |
-| GET | /api/properties/compare/localities | Compare localities |
-| GET | /api/properties/seller/my-listings | My listings |
-
-### ML
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /api/ml/estimate | Estimate price |
-| GET | /api/ml/health | ML API health |
-
-### Areas
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/areas | All area ratings |
-| GET | /api/areas/:city/:locality | Single area |
-| POST | /api/areas/:city/:locality/rate | Submit rating |
-
-### Investment
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/investment/insights | Top investment localities |
-| GET | /api/investment/stats | Market statistics |
-
----
-
-## 🛠 Tech Stack
-
-| Layer | Tech |
-|-------|------|
-| Frontend | React 18, React Router v6, Recharts, react-hot-toast, react-icons |
-| Backend | Node.js, Express, Mongoose, JWT, bcryptjs, express-validator |
-| Database | MongoDB |
-| ML | Python, Flask, scikit-learn (Random Forest), pandas, numpy |
-| Styling | Pure CSS (CSS variables, no UI library) |
-
----
-
-## 🔧 Environment Variables
-
-### backend/.env
 ```env
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/zameen
-JWT_SECRET=your_super_secret_key_here
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
 ML_API_URL=http://localhost:8000
 NODE_ENV=development
 ```
 
-### frontend (optional .env)
+### `frontend/.env` *(optional)*
+
 ```env
 REACT_APP_API_URL=http://localhost:5000/api
 ```
 
----
-
-## 📦 Deployment
-
-- **Frontend**: Vercel / Netlify (`npm run build`)
-- **Backend**: Railway / Render / Heroku
-- **ML API**: Railway / Render (`gunicorn app:app`)
-- **Database**: MongoDB Atlas (free tier)
+> Never commit real credentials to version control. Use `.env.example` files as templates and keep `.env` in `.gitignore`.
 
 ---
 
-## Made In India
+## API Reference
 
-Zameen covers real Indian cities, uses ₹ pricing in Lakhs/Crores, and is built to work across all major metros and tier-2 cities.
+### Authentication
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/auth/register` | Create a new user account |
+| POST | `/api/auth/login` | Login and receive JWT |
+| GET | `/api/auth/me` | Get authenticated user profile |
+| POST | `/api/auth/save-property/:id` | Save or unsave a property |
 
+### Properties
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/properties` | List properties with filters |
+| GET | `/api/properties/:id` | Get single property details |
+| POST | `/api/properties` | Create a new listing (seller) |
+| PUT | `/api/properties/:id` | Update a listing |
+| DELETE | `/api/properties/:id` | Remove a listing |
+| GET | `/api/properties/cities` | Fetch all supported cities |
+| GET | `/api/properties/localities/:city` | Localities for a given city |
+| GET | `/api/properties/price-history/:city/:locality` | Price trend data |
+| GET | `/api/properties/compare/localities` | Compare locality metrics |
+| GET | `/api/properties/seller/my-listings` | Authenticated seller's listings |
+
+### ML / Price Estimation
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/ml/estimate` | Predict price for given property details |
+| GET | `/api/ml/health` | Check ML service availability |
+
+### Areas
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/areas` | All area ratings |
+| GET | `/api/areas/:city/:locality` | Ratings for a specific locality |
+| POST | `/api/areas/:city/:locality/rate` | Submit a community rating |
+
+### Investment
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/investment/insights` | Top localities ranked by investment score |
+| GET | `/api/investment/stats` | City-level market statistics |
+
+---
+
+## Supported Cities
+
+Bangalore · Mumbai · Gurgaon · Hyderabad · Pune · Delhi · Chennai · Kolkata · Ahmedabad · Jaipur
+
+Each city includes 15 localities with realistic pricing benchmarks, area quality ratings, and investment scores based on observed Indian market patterns.
+
+---
+
+## Deployment
+
+| Service | Platform |
+|---|---|
+| Frontend | Vercel or Netlify (`npm run build`) |
+| Backend | Railway, Render, or Heroku |
+| ML API | Railway or Render (`gunicorn app:app`) |
+| Database | MongoDB Atlas (free tier works fine) |
+
+---
+
+## Future Improvements
+
+These are features planned for future iterations:
+
+- **Real listing data pipeline** — Integrate with public property data sources or allow CSV imports for real market data
+- **Advanced ML features** — Incorporate neighbourhood-level demand signals and seasonal trends into the price model
+- **Map view** — Plot listings on an interactive map with locality boundary overlays
+- **Mortgage calculator** — Help buyers estimate EMI and affordability directly on the listing page
+- **Notification system** — Alert saved buyers when a property's price drops or a new matching listing is added
+- **Admin panel** — Full dashboard for listing moderation, user management, and platform analytics
+- **Mobile responsive overhaul** — Dedicated mobile UX improvements for the property browsing and comparison flows
+
+---
+
+## A Note on This Project
+
+This project was developed and extended from an open-source base. The work involved integrating the ML microservice with the Express backend, implementing the fallback pricing logic, building out the investment scoring module, designing the seller workflow, and structuring the project for deployment readiness. It is presented here as a developed full-stack application, not a project built entirely from scratch.
+
+---
+
+*Built with ❤️ for the Indian property market — pricing in ₹ Lakhs and Crores, cities from Mumbai to Jaipur.*
